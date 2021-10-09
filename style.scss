@@ -22,6 +22,8 @@ $colorShadowBlueLight: #8dc9fc;
 
 $colorWindowGrey: #534d4d;
 
+$color_white_cloud: #f2f9fe;
+
 //定義漸層
 
 //屋頂的漸層
@@ -242,6 +244,59 @@ body {
 }
 //--- building end ---
 
+//--- clouds start ---
+.clouds {
+  @include size(100%);
+  @include abpos(0, 0);
+  opacity: 0.5;
+
+  @keyframes cloudRift {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  [class^="cloud"] {
+    @include size(100px, 36px, 20px);
+    background-color: $color_white_cloud;
+    animation: cloudRift 4s infinite;
+
+    &:before,
+    &::after {
+      content: "";
+      display: block;
+      @include size(50px, 50px, 50%);
+      background-color: $color_white_cloud;
+      position: absolute;
+    }
+    &::before {
+      left: 16px;
+      top: -28px;
+    }
+    &::after {
+      left: 35px;
+      top: -20px;
+    }
+  }
+
+  @for $i from 1 through 5 {
+    .cloud#{$i} {
+      // 設定隨機的X跟Y位置 然後絕對定位在卡片上
+      $posX: random() * 100%;
+      $posY: random() * 50%;
+      @include abpos($posX, $posY);
+
+      animation-delay: $i * -0.1s;
+    }
+  }
+}
+
+//--- clouds end ---
+
 //--- AllStars start---
 .allStars {
   //外層容器撐滿整個框框
@@ -286,6 +341,11 @@ body {
   }
 }
 //--- AllStars end---
+
+// 階層排序
+.leftTopText {
+  z-index: 2;
+}
 
 // 提醒可切換的文字
 .remind {
@@ -338,6 +398,7 @@ h5,
 .moon,
 .sun,
 .scene,
+.clouds,
 .allstars,
 .blueBlock,
 .building,
@@ -357,6 +418,9 @@ input:checked + .scene {
     display: block;
   }
   // ------
+  .clouds {
+    opacity: 1;
+  }
   .allStars {
     opacity: 0;
   }

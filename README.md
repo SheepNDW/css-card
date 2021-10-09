@@ -1,5 +1,6 @@
 # css-card
 
+![image](https://raw.githubusercontent.com/SheepNDW/css-card/main/assets/cssCard.gif) <br>
 用純 CSS 在網頁上寫一張動態卡片<br>
 參考吳哲宇老師的《動畫互動網頁特效入門（JS/CANVAS）》課程中的 Project2 案例改編而來
 

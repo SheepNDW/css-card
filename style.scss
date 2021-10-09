@@ -1,0 +1,388 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+*,
+*:before,
+*:after {
+  font-family: "Playfair Display", "微軟正黑體";
+  position: relative;
+  // border: 1px solid #000;
+}
+
+//指定顏色變數
+$colorBlueRoofLight: #6fc5ff;
+$colorBlueRoofDark: #0058ff;
+
+$colorGreyLight: #fafaf5;
+$colorGreyNormal: #e3e2cf;
+$colorGreyDark: #bebdaf;
+$colorBackground: #2c2f36;
+
+$colorShadowBlue: #7cb1ff;
+$colorShadowBlueLight: #8dc9fc;
+
+$colorWindowGrey: #534d4d;
+
+//定義漸層
+
+//屋頂的漸層
+$roofGradient: linear-gradient(150deg, $colorBlueRoofLight, $colorBlueRoofDark);
+//一整條從白天到晚上的背景顏色
+$sceneGradient: linear-gradient(#1d2b49, #1a45a0, #91cdff, #fff);
+
+// Mixins
+@mixin size($w, $h: $w, $bdrs: 0) {
+  width: $w;
+  height: $h;
+  border-radius: $bdrs;
+}
+@mixin flex($j: center, $a: center) {
+  display: flex;
+  justify-content: $j;
+  align-items: $a;
+}
+@mixin abpos($l: initial, $t: initial) {
+  position: absolute;
+  left: $l;
+  top: $t;
+}
+
+html,
+body {
+  @include size(100%);
+  @include flex;
+  margin: 0;
+  background-color: $colorBackground;
+  color: #fff;
+}
+
+.scene {
+  @include size(700px, 500px, 15px);
+  overflow: hidden;
+  background: $sceneGradient;
+  // 高度拉長製造白天夜晚
+  background-size: 100% 300%;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+
+  .leftTopText {
+    margin-left: 30px;
+    margin-top: 30px;
+    h1 {
+      font-size: 36px;
+      letter-spacing: 3px;
+      margin-top: 0;
+      font-weight: 300;
+    }
+    h5 {
+      font-size: 14px;
+      letter-spacing: 1px;
+      opacity: 0.6;
+      margin-bottom: 0;
+      font-weight: 300;
+    }
+    .blueBlock {
+      @include size(20px, 25px);
+      background-color: $colorShadowBlue;
+    }
+  }
+}
+
+//--- building start ---
+.building {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: scale(0.95);
+
+  //房子都靠右下角對齊
+  [class^="house"] {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  .house1 {
+    @include size(180px, 200px);
+    z-index: 1;
+    background-color: $colorGreyLight;
+    box-shadow: inset -50px 0px $colorGreyNormal;
+
+    .window {
+      @include size(40px, 100px, 20px);
+      // 填色 + 陰影
+      background-color: $colorGreyNormal;
+      box-shadow: inset 8px 5px $colorGreyDark;
+      // -------------
+      margin-top: 40px;
+      margin-left: 70px;
+      @include flex;
+      flex-direction: column;
+
+      .circle {
+        @include size(20px, 20px, 50%);
+        background-color: $colorWindowGrey;
+        margin: 4px;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  .house2 {
+    @include size(240px, 170px);
+    right: 130px;
+    z-index: 2;
+    background-color: $colorGreyLight;
+    // 上方陰影 & 右側陰影
+    box-shadow: inset 0px 15px $colorShadowBlueLight,
+      inset -72px 0px $colorGreyNormal;
+
+    .door {
+      @include size(40px, 80px, 20px 20px 0 0);
+      background-color: $colorBackground;
+      box-shadow: inset 10px 2px $colorShadowBlue;
+      position: absolute;
+      bottom: 0;
+      left: 45px;
+    }
+  }
+
+  .house3 {
+    @include size(320px, 300px);
+    @include flex;
+    background-color: $colorGreyLight;
+    z-index: 0;
+
+    .wall {
+      flex: 1;
+      height: 100%;
+      @include flex(center, flex-start);
+
+      .window {
+        @include size(24px, 50px, 12px 12px 0 0);
+        margin-top: 30px;
+        background-color: $colorBackground;
+      }
+
+      // 頭冠
+      &::before {
+        content: "";
+        display: block;
+        @include size(105%, 20px);
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        // 直接讓before繼承wall的顏色
+        background-color: inherit;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      @mixin wall($color, $flex, $windowPan: 0, $z: 1) {
+        background-color: $color;
+        flex: $flex;
+        .window {
+          box-shadow: inset $windowPan 2px $colorShadowBlue;
+        }
+        &::before {
+          z-index: $z;
+        }
+      }
+
+      &:nth-child(1) {
+        @include wall($colorGreyLight, 10, 8px);
+      }
+      &:nth-child(2) {
+        @include wall($colorGreyNormal, 14, 0px, 2);
+      }
+      &:nth-child(3) {
+        @include wall($colorGreyDark, 10, -8px);
+      }
+    }
+  }
+
+  // 屋頂跟小十字架
+
+  // 半圓
+  @mixin halfCir($r) {
+    @include size($r * 2, $r, $r $r 0 0);
+  }
+
+  .roof {
+    @include halfCir(150px);
+    position: absolute;
+    top: -170px;
+    right: 5px;
+    background: $roofGradient;
+
+    .roofTop {
+      @include halfCir(14px);
+      @include abpos(50%, -14px);
+      transform: translateX(-50%);
+      background-color: #fff;
+    }
+    .cross {
+      @include size(4px, 30px);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 10px;
+      background-color: #fff;
+
+      &::before {
+        content: "";
+        display: block;
+        @include size(20px, 4px);
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 15px;
+        background-color: inherit;
+      }
+    }
+  }
+}
+//--- building end ---
+
+//--- AllStars start---
+.allStars {
+  //外層容器撐滿整個框框
+  @include size(100%);
+  @include abpos(0, 0);
+
+  // 動畫
+  @keyframes falling {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    70% {
+      opacity: 1;
+    }
+
+    0% {
+      transform: translate(100px, 0px);
+    }
+    100% {
+      transform: translate(0px, 200px);
+    }
+  }
+
+  //以star開頭的為星星
+  [class^="star"] {
+    background-color: #fff;
+    @include size(3px, 3px, 50%);
+    animation: falling 2s infinite;
+  }
+
+  //產生30顆星星不同的偏移位置跟動畫delay
+  @for $i from 1 through 30 {
+    .star#{$i} {
+      // 設定隨機的X跟Y位置 然後絕對定位在卡片上
+      $posX: random() * 100%;
+      $posY: random() * -80% + 50%;
+      @include abpos($posX, $posY);
+
+      animation-delay: $i * -0.1s;
+    }
+  }
+}
+//--- AllStars end---
+
+// 提醒可切換的文字
+.remind {
+  opacity: 0.2;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+// 先將白天隱藏(預設)
+.dayText {
+  display: none;
+}
+
+//--- Sun & Moon start ---
+
+// 先將白天隱藏
+.sun,
+.moon {
+  @include size(50px, 50px, 50%);
+  @include abpos(250px, 100px);
+}
+
+//設定太陽的顏色跟光暈，初始透明度為0(夜晚看不到)
+.sun {
+  background-color: #ffdd38;
+  box-shadow: 0px 0px 20px rgba(#ffdd38, 0.5);
+  top: 400px;
+  opacity: 0;
+}
+
+.moon {
+  // box-shadow: inset 10px -10px rgba(white, 0.9);
+  animation: moonAppear 2s both;
+}
+
+@keyframes moonAppear {
+  0% {
+    box-shadow: inset 0px 0px rgba(white, 0.9);
+  }
+  100% {
+    box-shadow: inset 10px -10px rgba(white, 0.9);
+  }
+}
+//--- Sun & Moon end ---
+
+//--- switch day/night start ---
+
+// 指定漸變時間
+h1,
+h5,
+.moon,
+.sun,
+.scene,
+.allstars,
+.blueBlock,
+.building {
+  transition: 2s;
+}
+
+// 點擊效果
+input:checked + .scene {
+  // 更新背景顏色
+  background-position: 0 100%;
+  // 切換文字
+  .nightText {
+    display: none;
+  }
+  .dayText {
+    display: block;
+  }
+  // ------
+  .allStars {
+    opacity: 0;
+  }
+  h1,
+  h5 {
+    color: #222;
+  }
+  .building {
+    // 增加濾鏡
+    filter: brightness(105%);
+  }
+  .moon {
+    // 讓它往上消失
+    top: -100px;
+    opacity: 0;
+  }
+  .sun {
+    top: 100px;
+    opacity: 1;
+  }
+  .blueBlock {
+    background-color: #fff;
+  }
+}
+//--- switch day/night end ---
+
+// 把input隱藏
+input {
+  display: none;
+}

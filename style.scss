@@ -340,7 +340,8 @@ h5,
 .scene,
 .allstars,
 .blueBlock,
-.building {
+.building,
+.ghost-container {
   transition: 2s;
 }
 
@@ -379,10 +380,101 @@ input:checked + .scene {
   .blueBlock {
     background-color: #fff;
   }
+
+  // 幽靈晝夜效果
+  .ghostEyes {
+    &::before,
+    &::after {
+      content: "";
+      @include size(25px, 5px);
+    }
+  }
+  .ghost-container {
+    transform: scale(0.7) translateY(200px);
+    .ghost {
+      box-shadow: inset -17px 0px 0px #dbdbdb, 0px 0px 50px #91cdff;
+    }
+  }
 }
 //--- switch day/night end ---
 
 // 把input隱藏
 input {
   display: none;
+}
+
+// --- Ghost ---
+.ghost-container {
+  transform: scale(0.7);
+}
+.ghost-container .ghost {
+  position: absolute;
+  left: 70px;
+  top: 50px;
+  @include size(150px, 225px, 75px 75px 0 0);
+  background-color: #fff;
+  box-shadow: inset -17px 0px 0px #dbdbdb, 0px 0px 50px #1a45a0;
+
+  animation: ghostFloat 2s infinite;
+
+  // --- Eyes start ---
+  .ghostEyes {
+    display: flex;
+    justify-content: space-around;
+    width: 90px;
+    padding-top: 70px;
+    margin: 0 auto;
+    //用偽元素來生成眼睛
+    &::before,
+    &::after {
+      content: "";
+      @include size(15px, 25px, 50%);
+      background-color: #00034b;
+    }
+  }
+  // --- Eyes end ---
+
+  // --- Dimples start ---
+  .ghostDimples {
+    display: flex;
+    justify-content: space-around;
+    width: 130px;
+    padding-top: 15px;
+    margin: 0 auto;
+    &::before,
+    &::after {
+      content: "";
+      @include size(15px, 15px, 50%);
+      background-color: #ffbeff;
+    }
+  }
+  // --- Dimples end ---
+
+  // --- Foot start ---
+  .ghostFeet {
+    display: flex;
+    position: absolute;
+    bottom: -13px;
+    width: 100%;
+
+    .ghostFoot {
+      @include size(25%, 26px, 50%);
+      background-color: #fff;
+
+      &:last-child {
+        background-image: linear-gradient(to right, #fff 55%, #dbdbdb 45%);
+      }
+    }
+  }
+  // --- Foot end ---
+
+  @keyframes ghostFloat {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
 }
